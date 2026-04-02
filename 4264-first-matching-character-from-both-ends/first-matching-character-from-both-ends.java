@@ -1,13 +1,13 @@
 class Solution {
     public int firstMatchingIndex(String s) {
-        char[] chars = s.toCharArray(); 
-        int j = chars.length - 1;
+        int n = s.length();
+        int limit = (n - 1) / 2;
         
-        for (int i = 0; i <= j; i++, j--) {
-            if (chars[i] == chars[j]) {
+        for (int i = 0; i <= limit; i++) {
+            if (s.charAt(i) == s.charAt(n - i - 1)) {
                 return i;
             }
-        }       
+        }
         
         return -1;
     }
