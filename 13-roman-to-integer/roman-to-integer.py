@@ -1,17 +1,21 @@
 class Solution:
     def romanToInt(self, s: str) -> int:
-        values = {
-            'I': 1, 'V': 5, 'X': 10,
-            'L': 50, 'C': 100,
-            'D': 500, 'M': 1000
-        }
-
         total = 0
+        prev = 0
 
-        for i in range(len(s)):
-            if i < len(s) - 1 and values[s[i]] < values[s[i + 1]]:
-                total -= values[s[i]]
+        for c in reversed(s):
+            if c == 'I': val = 1
+            elif c == 'V': val = 5
+            elif c == 'X': val = 10
+            elif c == 'L': val = 50
+            elif c == 'C': val = 100
+            elif c == 'D': val = 500
+            else: val = 1000  # 'M'
+
+            if val < prev:
+                total -= val
             else:
-                total += values[s[i]]
+                total += val
+                prev = val
 
         return total
