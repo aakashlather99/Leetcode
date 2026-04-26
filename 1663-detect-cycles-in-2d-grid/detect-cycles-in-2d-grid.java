@@ -1,19 +1,32 @@
 class Solution {
-    int m,n;
-    boolean[][] vis;
-
 
     public boolean containsCycle(char[][] grid) {
-        m = grid.length;
-        n = grid[0].length;
 
-        vis = new boolean[m][n];
+        int m = grid.length;
+        int n = grid[0].length;
+
+        int[] parent = new int[m*n];
+        int[] rank = new int[m*n];
+
+        for(int i=0;i<m*n;i++)
+            parent[i]=i;
 
         for(int i=0;i<m;i++){
             for(int j=0;j<n;j++){
 
-                if(!vis[i][j]){
-                    if(dfs(grid,i,j,-1,-1,grid[i][j]))
+                // check right
+                if(j+1<n && grid[i][j]==grid[i][j+1]){
+                    if(!union(parent,rank,
+                            i*n+j,
+                            i*n+j+1))
+                        return true;
+                }
+
+                // check down
+                if(i+1<m && grid[i][j]==grid[i+1][j]){
+                    if(!union(parent,rank,
+                            i*n+j,
+                            (i+1)*n+j))
                         return true;
                 }
             }
@@ -22,38 +35,34 @@ class Solution {
         return false;
     }
 
+    private int find(int[] parent,int x){
+        while(parent[x]!=x){
+            parent[x]=parent[parent[x]];
+            x=parent[x];
+        }
+        return x;
+    }
 
-    private boolean dfs(char[][] grid,
-                        int r,int c,
-                        int pr,int pc,
-                        char ch){
+    // returns false if already connected => cycle
+    private boolean union(int[] parent,int[] rank,int a,int b){
 
-        vis[r][c]=true;
+        int pa=find(parent,a);
+        int pb=find(parent,b);
 
-        int[][] dirs={
-            {1,0},{-1,0},{0,1},{0,-1}
-        };
+        if(pa==pb)
+            return false;
 
-        for(int[] d:dirs){
-
-            int nr=r+d[0];
-            int nc=c+d[1];
-
-            if(nr<0 || nc<0 || nr>=m || nc>=n)
-                continue;
-
-            if(grid[nr][nc]!=ch)
-                continue;
-
-            if(!vis[nr][nc]){
-                if(dfs(grid,nr,nc,r,c,ch))
-                    return true;
-            }
-            else if(nr!=pr || nc!=pc){
-                return true;
-            }
+        if(rank[pa]<rank[pb]){
+            parent[pa]=pb;
+        }
+        else if(rank[pa]>rank[pb]){
+            parent[pb]=pa;
+        }
+        else{
+            parent[pb]=pa;
+            rank[pa]++;
         }
 
-        return false;
+        return true;
     }
 }
