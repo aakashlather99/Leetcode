@@ -1,6 +1,9 @@
-class Solution:
-    def hasValidPath(self, grid):
+from typing import List
+from collections import deque
 
+class Solution:
+    def hasValidPath(self, grid: List[List[int]]) -> bool:
+        
         dirs = {
             1: [(0,-1),(0,1)],
             2: [(-1,0),(1,0)],
@@ -10,30 +13,32 @@ class Solution:
             6: [(0,1),(-1,0)]
         }
 
-        m,n=len(grid),len(grid[0])
+        m, n = len(grid), len(grid[0])
 
-        vis=[[False]*n for _ in range(m)]
-
-        q=deque([(0,0)])
-        vis[0][0]=True
+        q = deque([(0,0)])
+        visited = [[False]*n for _ in range(m)]
+        visited[0][0] = True
 
         while q:
+            r, c = q.popleft()
 
-            r,c=q.popleft()
-
-            if r==m-1 and c==n-1:
+            if r == m-1 and c == n-1:
                 return True
 
-            for dr,dc in dirs[grid[r][c]]:
+            for dr, dc in dirs[grid[r][c]]:
 
-                nr,nc=r+dr,c+dc
+                nr, nc = r+dr, c+dc
 
-                if not(0<=nr<m and 0<=nc<n) or vis[nr][nc]:
+                if not (0 <= nr < m and 0 <= nc < n):
                     continue
 
-                for br,bc in dirs[grid[nr][nc]]:
-                    if nr+br==r and nc+bc==c:
-                        vis[nr][nc]=True
+                if visited[nr][nc]:
+                    continue
+
+                # Neighbor must connect back
+                for br, bc in dirs[grid[nr][nc]]:
+                    if nr+br == r and nc+bc == c:
+                        visited[nr][nc] = True
                         q.append((nr,nc))
                         break
 
